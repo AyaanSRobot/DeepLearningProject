@@ -10,12 +10,16 @@ import PIL as Image
 import torch.nn.functional as F
 import group_3 as g3
 # Custom dataset class
-model = g3.
+input_dim = (50,50)
+channels = 1
 class customDataSet(torch.utils.data.Dataset):
     def __init__(self, path, transform=None):
         self.path = path
         self.transform = transforms.Compose(
-        [transforms.Resize(input_dim),transforms.Grayscale(num_output_channels=channels),transforms.ToTensor()
+        [transforms.Resize(input_dim),
+         transforms.Grayscale(num_output_channels=channels),
+         transforms.RandomChoice(),
+         transforms.ToTensor()
 ])
         self.data = []
         self.labels = []
@@ -46,6 +50,7 @@ def dataLoading():
     training_data_loader = DataLoader(customDataSet(data_path[1],batch_size=32, shuffle=True))
     validation_data_loader = DataLoader(customDataSet(data_path[2],batch_size=32, shuffle=True))
     return training_data_loader, validation_data_loader
+model = g3.group_3()
 def train(model, train_loader, val_loader, num_epochs=5, lr=0.001):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)   
@@ -87,6 +92,12 @@ def train(model, train_loader, val_loader, num_epochs=5, lr=0.001):
             else:
                 epochs_WI += 1
     return train_loss, val_loss
+def saveModel(model,train_loss,val_loss):
+    accuracy = 100 * train_loss/val_loss
+    if(accuracy < 90):
+        print(f'Accuracy is less than 90%: {accuracy}')
+        return
+    torch.save(model.state_dict(), f'model_{accuracy}.pth')
 def test(model, test_loader):
     correct = 0
     total = 0
