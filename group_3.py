@@ -9,7 +9,7 @@ import os
 import PIL as Image
 import torch.nn.functional as F
 # Size 50x50 for images
-input_dim = (50,50)
+input_dim = (400,400)
 #Grayscaled images have 1 channel, which is fine for the purpose of deteting pneumonia in the x-ray images
 channels = 1
 class group_3(nn.Module):

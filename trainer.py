@@ -10,15 +10,10 @@ import PIL as Image
 import torch.nn.functional as F
 import group_3 as g3
 # Custom dataset class
-input_dim = (50,50)
-channels = 1
 class customDataSet(torch.utils.data.Dataset):
     def __init__(self, path, transform=None):
         self.path = path
-        self.transform = transforms.Compose(
-        [transforms.Resize(input_dim),
-         transforms.Grayscale(num_output_channels=channels),
-         transforms.RandomChoice(),
+        self.transform = transforms.Compose([
          transforms.ToTensor()
 ])
         self.data = []
@@ -45,7 +40,7 @@ class customDataSet(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data)
 def dataLoading():
-    data_path = ['data/normal','data/training, data/validation']
+    data_path = ['data/normal','data/training', 'data/validation']
     # Load the data
     training_data_loader = DataLoader(customDataSet(data_path[1],batch_size=32, shuffle=True))
     validation_data_loader = DataLoader(customDataSet(data_path[2],batch_size=32, shuffle=True))
@@ -109,3 +104,12 @@ def test(model, test_loader):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
     return correct / total
+def plotLossCurve(train_loss, val_loss):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(train_loss, label='Training Loss')
+    ax.plot(val_loss, label='Validation Loss')
+    ax.xlabel('Epoch')
+    ax.ylabel('Loss')
+    ax.set_title('Loss Curve')
+    ax.legend()
+    ax.show()
